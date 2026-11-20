@@ -1,0 +1,106 @@
+{
+  "project_shape": "backend",
+  "modules": [
+    {
+      "id": "reference",
+      "path": "railchain/reference.py",
+      "responsibility": "构造线性区段坐标"
+    },
+    {
+      "id": "slicing",
+      "path": "railchain/slicing.py",
+      "responsibility": "按证据变化划分区间"
+    },
+    {
+      "id": "publication",
+      "path": "railchain/publication.py",
+      "responsibility": "冻结巡测成果版本"
+    },
+    {
+      "id": "__main__",
+      "path": "railchain/__main__.py",
+      "responsibility": "提供文件导入与 JSON 查询入口"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "project",
+      "name": "将局部巡测投影到路线",
+      "entry": "python3 -B -m railchain --db demo.sqlite publish examples/alignment.json",
+      "success": "正反方向统一为全局毫米",
+      "failure": "越出区段的观测拒绝",
+      "verification": "python3 -B examples/smoke.py",
+      "module_ids": [
+        "reference",
+        "slicing",
+        "publication",
+        "__main__"
+      ],
+      "steps": [
+        "执行 publish examples/alignment.json",
+        "正反方向统一为全局毫米"
+      ]
+    },
+    {
+      "id": "slice",
+      "name": "生成覆盖分段",
+      "entry": "python3 -B -m railchain --db demo.sqlite publish examples/alignment.json",
+      "success": "可用、遮挡和空白区间全部出现",
+      "failure": "同观测标识重复时拒绝",
+      "verification": "python3 -B examples/smoke.py",
+      "module_ids": [
+        "reference",
+        "slicing",
+        "publication",
+        "__main__"
+      ],
+      "steps": [
+        "执行 publish examples/alignment.json",
+        "可用、遮挡和空白区间全部出现"
+      ]
+    },
+    {
+      "id": "release",
+      "name": "重放和读取独立成果版本",
+      "entry": "python3 -B -m railchain --db demo.sqlite read quarry-branch alignment-blue",
+      "success": "返回冻结事实及摘要",
+      "failure": "版本未知或写入异值时拒绝",
+      "verification": "python3 -B examples/smoke.py",
+      "module_ids": [
+        "__main__",
+        "publication",
+        "reference"
+      ],
+      "steps": [
+        "执行 read quarry-branch alignment-blue",
+        "返回冻结事实及摘要"
+      ]
+    }
+  ],
+  "complexity": {
+    "mechanisms": [
+      {
+        "id": "project",
+        "workflow_ids": [
+          "project"
+        ],
+        "behavior": "正反方向统一为全局毫米"
+      },
+      {
+        "id": "slice",
+        "workflow_ids": [
+          "slice"
+        ],
+        "behavior": "可用、遮挡和空白区间全部出现"
+      },
+      {
+        "id": "release",
+        "workflow_ids": [
+          "release"
+        ],
+        "behavior": "返回冻结事实及摘要"
+      }
+    ]
+  },
+  "sample_source": "examples/alignment.json"
+}

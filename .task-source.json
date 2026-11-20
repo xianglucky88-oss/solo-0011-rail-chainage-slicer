@@ -1,0 +1,84 @@
+{
+  "version": 2,
+  "task_source_schema_version": 1,
+  "project_domain": "数据工程",
+  "project_subdirection": "数据分析与数据应用",
+  "delivery_profile": "local-unadmitted",
+  "baseline_tier": "local-workflow-baseline",
+  "generation_scope": {
+    "mode": "explicit",
+    "basis": "本轮只交付五个本地基线，未生成题库或评定题型容量。"
+  },
+  "production_source": "railchain",
+  "workflow_ids": [
+    "project",
+    "slice",
+    "release"
+  ],
+  "entities": [
+    {
+      "id": "section",
+      "label": "路线区段"
+    },
+    {
+      "id": "pass",
+      "label": "巡测观测"
+    },
+    {
+      "id": "span",
+      "label": "覆盖切片"
+    },
+    {
+      "id": "alignment_release",
+      "label": "路线成果"
+    }
+  ],
+  "state_machines": [
+    {
+      "subject": "alignment_release",
+      "states": [
+        "absent",
+        "published"
+      ],
+      "transitions": [
+        "absent->published",
+        "published->published (replay)"
+      ]
+    }
+  ],
+  "capability_families": [
+    {
+      "family": "得到可独立验证的路线坐标区间",
+      "occupied_by": [
+        "project"
+      ],
+      "available": false
+    }
+  ],
+  "extension_seams": [
+    {
+      "id": "linear-reference",
+      "anchor": "railchain/reference.py",
+      "entry": "Section.project",
+      "distinct_outcome": "得到可独立验证的路线坐标区间",
+      "mechanism": "project"
+    }
+  ],
+  "tension_points": [
+    {
+      "workflow_id": "project",
+      "description": "正反方向统一为全局毫米",
+      "observable_failure": "越出区段的观测拒绝"
+    },
+    {
+      "workflow_id": "slice",
+      "description": "可用、遮挡和空白区间全部出现",
+      "observable_failure": "同观测标识重复时拒绝"
+    },
+    {
+      "workflow_id": "release",
+      "description": "返回冻结事实及摘要",
+      "observable_failure": "版本未知或写入异值时拒绝"
+    }
+  ]
+}
