@@ -19,6 +19,14 @@
     {
       "workflow_id": "release",
       "command": "python3 -B examples/smoke.py"
+    },
+    {
+      "workflow_id": "shift_plan",
+      "command": "python3 -B examples/shift_smoke.py"
+    },
+    {
+      "workflow_id": "daily_release",
+      "command": "python3 -B examples/shift_smoke.py"
     }
   ]
 }

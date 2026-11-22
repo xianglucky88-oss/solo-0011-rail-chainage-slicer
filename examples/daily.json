@@ -1,0 +1,96 @@
+{
+  "route": "quarry-branch",
+  "shift": "2026-11-23-day",
+  "alignment": {
+    "route": "quarry-branch",
+    "edition": "alignment-blue"
+  },
+  "requirements": {
+    "east-cut": 2,
+    "retaining-wall": 2
+  },
+  "prior": {
+    "facts": {
+      "shift": "2026-11-22-night",
+      "observations": [
+        {
+          "source": "history",
+          "ref": "h-east-a",
+          "row": 1,
+          "section": "east-cut",
+          "start_mm": 0,
+          "end_mm": 1000,
+          "result": "usable",
+          "crew": "A",
+          "job": null
+        }
+      ]
+    }
+  },
+  "signed_jobs": [
+    {
+      "job": "j-east-second",
+      "section": "east-cut",
+      "from_mm": 0,
+      "to_mm": 1000,
+      "crew": "C"
+    },
+    {
+      "job": "j-east-extra",
+      "section": "east-cut",
+      "from_mm": 200,
+      "to_mm": 400,
+      "crew": "D"
+    },
+    {
+      "job": "j-wall-tail",
+      "section": "retaining-wall",
+      "from_mm": 0,
+      "to_mm": 600,
+      "crew": "A"
+    }
+  ],
+  "receipts": [
+    {
+      "receipt": "r-east-c",
+      "job": "j-east-second",
+      "from_mm": 0,
+      "to_mm": 1000,
+      "result": "usable",
+      "crew": "C"
+    },
+    {
+      "receipt": "r-east-c-resub",
+      "job": "j-east-second",
+      "from_mm": 0,
+      "to_mm": 1000,
+      "result": "usable",
+      "crew": "C",
+      "resubmission_of": "r-east-c"
+    },
+    {
+      "receipt": "r-east-extra",
+      "job": "j-east-extra",
+      "from_mm": 0,
+      "to_mm": 1000,
+      "result": "usable",
+      "crew": "D"
+    },
+    {
+      "receipt": "r-wall-tail",
+      "job": "j-wall-tail",
+      "from_mm": 0,
+      "to_mm": 600,
+      "result": "usable",
+      "crew": "A"
+    },
+    {
+      "receipt": "r-unsigned",
+      "job": "j-nope",
+      "from_mm": 0,
+      "to_mm": 100,
+      "result": "usable",
+      "crew": "Z"
+    }
+  ]
+}

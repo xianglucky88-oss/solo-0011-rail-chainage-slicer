@@ -20,6 +20,36 @@
       "id": "__main__",
       "path": "railchain/__main__.py",
       "responsibility": "提供文件导入与 JSON 查询入口"
+    },
+    {
+      "id": "coverage",
+      "path": "railchain/coverage.py",
+      "responsibility": "提供整数区间并集与整段判定"
+    },
+    {
+      "id": "store",
+      "path": "railchain/store.py",
+      "responsibility": "统一 SQLite 版本化存储"
+    },
+    {
+      "id": "evidence",
+      "path": "railchain/evidence.py",
+      "responsibility": "落实独立车组与已签范围证据"
+    },
+    {
+      "id": "shift",
+      "path": "railchain/shift.py",
+      "responsibility": "归一化开班文档"
+    },
+    {
+      "id": "plan",
+      "path": "railchain/plan.py",
+      "responsibility": "开班计划与非预测评估"
+    },
+    {
+      "id": "daily",
+      "path": "railchain/daily.py",
+      "responsibility": "发布日常巡测成果"
     }
   ],
   "workflows": [
@@ -75,6 +105,47 @@
         "执行 read quarry-branch alignment-blue",
         "返回冻结事实及摘要"
       ]
+    },
+    {
+      "id": "shift_plan",
+      "name": "开班计划与到达后改派",
+      "entry": "python3 -B -m railchain --db demo.sqlite plan-shift examples/shift.json",
+      "success": "按当时已知信息冻结一组开班作业并给出可比方案",
+      "failure": "未到达通知、回撤通知、返还已耗分钟或改动已开始作业时拒绝",
+      "verification": "python3 -B examples/shift_smoke.py",
+      "module_ids": [
+        "shift",
+        "plan",
+        "store",
+        "coverage",
+        "evidence",
+        "reference",
+        "__main__"
+      ],
+      "steps": [
+        "执行 plan-shift examples/shift.json",
+        "按当时已知信息冻结一组开班作业"
+      ]
+    },
+    {
+      "id": "daily_release",
+      "name": "发布班终日常巡测成果",
+      "entry": "python3 -B -m railchain --db demo.sqlite publish-daily examples/daily.json",
+      "success": "分别给出已有观测与独立证据，保留整段复测缺口",
+      "failure": "回执超出已签范围、补交同一回执或非独立车组不计足时拒绝或排除",
+      "verification": "python3 -B examples/shift_smoke.py",
+      "module_ids": [
+        "daily",
+        "evidence",
+        "store",
+        "coverage",
+        "reference",
+        "__main__"
+      ],
+      "steps": [
+        "执行 publish-daily examples/daily.json",
+        "分别给出已有观测与独立证据"
+      ]
     }
   ],
   "complexity": {
@@ -99,6 +170,27 @@
           "release"
         ],
         "behavior": "返回冻结事实及摘要"
+      },
+      {
+        "id": "non_anticipate",
+        "workflow_ids": [
+          "shift_plan"
+        ],
+        "behavior": "同一开盘信息对应同一组开班作业"
+      },
+      {
+        "id": "sunk_minutes",
+        "workflow_ids": [
+          "shift_plan"
+        ],
+        "behavior": "已耗分钟不返还、已开始作业不改"
+      },
+      {
+        "id": "independent_evidence",
+        "workflow_ids": [
+          "daily_release"
+        ],
+        "behavior": "反向重跑、半段和补交不计足独立车组"
       }
     ]
   },

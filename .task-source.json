@@ -31,11 +31,48 @@
     {
       "id": "alignment_release",
       "label": "路线成果"
+    },
+    {
+      "id": "job",
+      "label": "开班作业"
+    },
+    {
+      "id": "notification",
+      "label": "进场通知"
+    },
+    {
+      "id": "daily_release",
+      "label": "日常巡测成果"
     }
   ],
   "state_machines": [
     {
       "subject": "alignment_release",
+      "states": [
+        "absent",
+        "published"
+      ],
+      "transitions": [
+        "absent->published",
+        "published->published (replay)"
+      ]
+    },
+    {
+      "subject": "shift_plan",
+      "states": [
+        "absent",
+        "planned",
+        "replanned"
+      ],
+      "transitions": [
+        "absent->planned",
+        "planned->replanned",
+        "replanned->replanned",
+        "planned->planned (replay)"
+      ]
+    },
+    {
+      "subject": "daily_release",
       "states": [
         "absent",
         "published"
@@ -53,6 +90,20 @@
         "project"
       ],
       "available": false
+    },
+    {
+      "family": "在报告陆续到达时做出不事后倒选的复测安排",
+      "occupied_by": [
+        "shift_plan"
+      ],
+      "available": false
+    },
+    {
+      "family": "保留独立证据并发布可移交的日常巡测成果",
+      "occupied_by": [
+        "daily_release"
+      ],
+      "available": false
     }
   ],
   "extension_seams": [
@@ -62,6 +113,20 @@
       "entry": "Section.project",
       "distinct_outcome": "得到可独立验证的路线坐标区间",
       "mechanism": "project"
+    },
+    {
+      "id": "shift-policy",
+      "anchor": "railchain/plan.py",
+      "entry": "evaluate",
+      "distinct_outcome": "得到可比且不事后倒选的开班计划",
+      "mechanism": "non_anticipate"
+    },
+    {
+      "id": "independent-evidence",
+      "anchor": "railchain/evidence.py",
+      "entry": "analyze",
+      "distinct_outcome": "得到无法被同车组或补交伪造的独立证据",
+      "mechanism": "independent_evidence"
     }
   ],
   "tension_points": [
@@ -79,6 +144,16 @@
       "workflow_id": "release",
       "description": "返回冻结事实及摘要",
       "observable_failure": "版本未知或写入异值时拒绝"
+    },
+    {
+      "workflow_id": "shift_plan",
+      "description": "同一开盘信息对应同一组开班作业",
+      "observable_failure": "未到达通知或回撤通知被拒绝"
+    },
+    {
+      "workflow_id": "daily_release",
+      "description": "分别保留已有观测与独立证据",
+      "observable_failure": "反向重跑、半段与补交不计足独立车组"
     }
   ]
 }

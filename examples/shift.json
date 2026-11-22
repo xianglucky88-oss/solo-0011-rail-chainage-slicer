@@ -1,0 +1,134 @@
+{
+  "route": "quarry-branch",
+  "shift": "2026-11-23-day",
+  "alignment": {
+    "route": "quarry-branch",
+    "edition": "alignment-blue"
+  },
+  "requirements": {
+    "east-cut": 2,
+    "retaining-wall": 1
+  },
+  "history": [
+    {
+      "pass": "h-east-a",
+      "section": "east-cut",
+      "from_mm": 0,
+      "to_mm": 1000,
+      "result": "usable",
+      "crew": "A"
+    },
+    {
+      "pass": "h-wall-a",
+      "section": "retaining-wall",
+      "from_mm": 100,
+      "to_mm": 500,
+      "result": "usable",
+      "crew": "A"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "report-wall",
+      "at_min": 20
+    },
+    {
+      "id": "report-crew",
+      "at_min": 40,
+      "requires": [
+        "report-wall"
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "job": "wall-finish",
+      "section": "retaining-wall",
+      "from_mm": 0,
+      "to_mm": 600,
+      "crew": "A",
+      "minutes": 35
+    },
+    {
+      "job": "wall-tail",
+      "section": "retaining-wall",
+      "from_mm": 500,
+      "to_mm": 600,
+      "crew": "A",
+      "minutes": 8,
+      "notifications": [
+        [
+          "report-wall"
+        ]
+      ]
+    },
+    {
+      "job": "east-second",
+      "section": "east-cut",
+      "from_mm": 0,
+      "to_mm": 1000,
+      "crew": "C",
+      "minutes": 45,
+      "notifications": [
+        [
+          "report-crew"
+        ]
+      ]
+    }
+  ],
+  "budget_minutes": 60,
+  "release_at_min": 40,
+  "policies": [
+    {
+      "name": "early-certain",
+      "early": [
+        "wall-finish"
+      ],
+      "reserve_minutes": 0,
+      "order": "value"
+    },
+    {
+      "name": "reserve-capacity",
+      "early": [],
+      "reserve_minutes": 30,
+      "order": "rate"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "crew-yes",
+      "notifications": [
+        "report-wall",
+        "report-crew"
+      ],
+      "outcomes": {
+        "report-wall": "usable",
+        "report-crew": "usable"
+      }
+    },
+    {
+      "id": "crew-occluded",
+      "notifications": [
+        "report-wall",
+        "report-crew"
+      ],
+      "outcomes": {
+        "report-wall": "usable",
+        "report-crew": "occluded"
+      }
+    },
+    {
+      "id": "wall-only",
+      "notifications": [
+        "report-wall"
+      ],
+      "outcomes": {
+        "report-wall": "usable"
+      }
+    },
+    {
+      "id": "quiet",
+      "notifications": []
+    }
+  ]
+}
